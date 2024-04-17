@@ -1,78 +1,72 @@
 ****************************************************************
-*URINALYSIS PROJECT
+*PROJECT: URINALYSIS FINAL - DATA FROM MR. HOMIAH
 *AUTHOR: BERNICE AMEYAW
-*12.10.2020*
+*DATE: 25/10/2023
 ****************************************************************
 
-*making imported columns which are recognized as strings numbers since they contain only numbers
-destring sex, replace
-destring category, replace
-destring urobilinogen, replace
-destring blood, replace
-destring bilirubin, replace
-destring ketones, replace
-destring glucose, replace
-destring protein, replace
-destring nitrite, replace
-destring leukocytes, replace
-destring creatininegl, replace
-destring albumin, replace
-destring pcrationeg, replace
-destring acrationeg, replace
-destring color, replace
-destring appearance, replace
-destring rtec, replace
-destring acratio
-
 *defining and labling variables
-label define sex 0 "0 male" 1 "1 female"
-label val sex sex
+label define SEX 0 "male" 1 "female"
+label val SEX SEX
 
-replace category = 8 if category ==0
-label define category 1 "1 cyesis hypertension" 2 "2 cyesis & diabetes" 3 "3 cyesis, hypertension & diabetes" 4 "4 cyesis" 5 "5 diabetes & hypertension" 6 "6 diabetes" 7 "7 hypertension" 8 "8 unknown" 9 "9 cyesis & impaired glucose tolerance"
-label val category category
+label define CATEGORY 1 "cyesis & hypertension" 2 "cyesis & diabetes" 3 "cyesis, hypertension & diabetes" 4 "cyesis only" 5 "diabetes & hypertension" 6 "diabetes only" 7 "hypertension only" 8 "8 unknown" 10 "cyesis & impaired glucose tolerance"
+label val CATEGORY CATEGORY
 
-label define urobilinogen 0 "0 normal" 1 "1 increased"
-label val urobilinogen urobilinogen
+label define UROBILINOGEN 0 "normal" 1 "1+" 2 "2+"
+label val UROBILINOGEN UROBILINOGEN
 
-label define blood 0 "0 negative" 1 "1 1+" 2 "2 2+" 3 "3 3+" 4 "4 trace"
-label val blood blood
+label define BLOOD 0 "negative" 1 "1+" 2 "2+" 3 "3+" 4 "trace"
+label val BLOOD BLOOD
 
-label define bilirubin 0 "0 negative" 1 "1 1+" 2 "2 2+" 3 "3 3+" 4 "4 trace"
-label val bilirubin bilirubin
+label define BILIRUBIN 0 "negative" 1 "1+" 2 "2+" 3 "3+" 4 "trace"
+label val BILIRUBIN BILIRUBIN
 
-label define ketones 0 "0 negative" 1 "1 1+" 2 "2 2+" 3 "3 3+" 4 "4 trace"
-label val ketones ketones
+label define KETONES 0 "negative" 1 "1+" 2 "2+" 3 "3+" 4 "trace"
+label val KETONES KETONES
 
-label define glucose 0 "0 negative" 1 "1 1+" 2 "2 2+" 3 "3 3+" 4 "4 trace"
-label val glucose glucose
+label define GLUCOSE 0 "negative" 1 "1+" 2 "2+" 3 "3+" 4 "trace"
+label val GLUCOSE GLUCOSE
 
-label define protein 0 "0 negative" 1 "1 1+" 2 "2 2+" 3 "3 3+" 4 "4 trace"
-label val protein protein
+label define PROTEIN 0 "negative" 1 "1+" 2 "2+" 3 "3+" 4 "trace"
+label val PROTEIN PROTEIN
 
-label define leukocytes 0 "0 negative" 1 "1 1+" 2 "2 2+" 3 "3 3+" 4 "4 trace"
-label val leukocytes leukocytes
+label define LEUKOCYTES 0 "negative" 1 "1+" 2 "2+" 3 "3+" 4 "trace"
+label val LEUKOCYTES LEUKOCYTES
 
-label define appearance 0 "1 clear" 1 "2 cloudy"
-label val appearance appearance
+label define APPEARANCE 0 "clear" 1 "cloudy"
+label val APPEARANCE APPEARANCE
 
-label define albumin 1 "1 >300mg/gcr"
-label val albumin albumin
+label define ALBUMINgl 400 "OVER"
+label val ALBUMINgl ALBUMINgl
 
-label define acrationeg 1 "1 >=300"
-label val acrationeg acrationeg
 
-label define pcrationeg 1 "1 >=0.5"
-label val pcrationeg pcrationeg
+*generating and defining albuminuria
+generate ALBUMINURIA = 1 if AC < 30
+replace ALBUMINURIA = 2 if AC >= 30
+replace ALBUMINURIA = 3 if AC > 300
+replace ALBUMINURIA = . if AC == .
+label define ALBUMINURIA 1 "normal" 2 "mild albuminuria" 3 "overt albuminuria"
+label val ALBUMINURIA ALBUMINURIA
 
-label define color 1 "1 straw" 2 "2 light yellow" 3 "3 yellow" 4 "4 amber" 5 "5 dark brown" 6 "6 red" 7 "7 other"
-label val color color
+*generating and defining high PC ratio
+generate pc_use = 0 if PC <= 0.12
+replace pc_use = 1 if PC > 0.12
+replace pc_use = . if PC == .
+label define pc_use 0 "normal" 1 "high PC"
+label val pc_use pc_use
 
-label define pcrationeg 1 "1 >=0.5"
-label val pcrationeg pcrationeg
+*generating and defining proteinuria
+generate proteinuria = 0 if PC < 0.15
+replace proteinuria = 1 if PC >= 0.15
+replace proteinuria = 2 if PC > 0.5
+replace proteinuria = . if PC == .
+label define proteinuria 0 "normal" 1 "mild proteinuria" 2 "severe proteinuria"
+label val proteinuria proteinuria
 
-label define nitrite 0 "0 negative" 1 "1 positive"
-label val nitrite nitrite
+label define COLOR 1 "straw" 2 "light yellow" 3 "yellow" 4 "amber" 5 "dark brown" 6 "red" 7 "other"
+label val COLOR COLOR
+
+label define NITRITE 0 "negative" 1 "positive"
+label val NITRITE NITRITE
 
 *generating age ranges for AGE and defining
 generate ageranges = 1 if AGE < 5
@@ -81,127 +75,120 @@ replace ageranges = 3 if AGE >= 15
 replace ageranges = 4 if AGE >= 25 
 replace ageranges = 5 if AGE >= 45 
 replace ageranges = 6 if AGE >= 65
+replace ageranges = . if AGE == .
 
-label define ageranges 1 "1 < 5yrs" 2 "2 5-14yrs" 3 "3 15-24yrs" 4 "4 25-44yrs" 5 "5 45-64yrs" 6 "6 >64yrs"
+label define ageranges 1 "children under 5yrs" 2 "5-14yrs" 3 "15-24yrs" 4 "25-44yrs" 5 "45-64yrs" 6 ">64yrs"
 label values ageranges ageranges
+
+*generating and labling SG ranges
+generate SG_label = 0 if SG < 1.005
+replace SG_label = 1 if SG >= 1.005
+replace SG_label = 2 if SG > 1.030
+replace SG_label = . if SG == .
+label define SG_label 0 "low" 1 "normal" 2 "high"
+label values SG_label SG_label
+
+label drop SG_label
+
+*generating and labling ph ranges
+generate ph_label = 0 if PH < 4.5
+replace ph_label = 1 if PH >= 4.5
+replace ph_label = 2 if PH > 5.0
+replace ph_label = . if PH == .
+label define ph_label 0 "acidic" 1 "normal" 2 "basic"
+label values ph_label ph_label
 
 *descriptive statistics
 sum AGE
-tab ageranges sex, row
-tab category ageranges
+graph pie, over(CATEGORY) pl(_all percent)
+tab CATEGORY, m
+tab ALBUMINURIA, m
+tab AC,m
+tab ALBUMINURIA SG_label, 
+tab ALBUMINURIA SEX, m cell
+tab SEX, m
+tab ageranges ALBUMINURIA, m
+tab ageranges ALBUMINURIA, column
+tab CATEGORY ALBUMINURIA
+tab SEX ALBUMINURIA, column
+tab var31 ALBUMINURIA, column
 
-*generating and defining albuminuria
-generate albuminuria = 2 if albumin >= 0.15
-replace albuminuria = 3 if albumin < 0.15
-replace albuminuria = 1 if albumin == 1
-
-label define albuminuria 1 "1 macroalbuminuria" 2 "2 microalbuminuria" 3 "3 normal"
-label val albuminuria albuminuria
-
-tab albuminuria
-tab albuminuria sex, row
-
-*relationship between albuminuria and leukocytes (leukocytes ie pyruvia is the disease and albuminuria is the exposure)
-tab albuminuria leukocytes, row
-*tab albuminuria leukocytes, chi (unless albuminuria and leukocytes are categorized into yes and no)
-
-*nitrite prevalence, data in nitrite is wrong, use nitrie_n
-label define nitrite_n 0 "0 negative" 1 "1 positive"
-label val nitrite_n nitrite_n
-tab nitrite_n
-tab category nitrite_n
-
-*tab ANC and Ph
-generate pH_ranges = 1 if PH < 4.6
-replace pH_ranges = 2 if PH >=4.6
-replace pH_ranges = 3 if PH >8
-label define pH_ranges 1 "1 acidic" 2 "2 normal" 3 "3 alkalinie"
-label val pH_ranges pH_ranges
-
-generate cyesis = 0 if category <= 4
-replace cyesis = 1 if category > 4
-replace cyesis = 0 if category == 9
-label define cyesis 1 "1 no" 0 "0 yes"
-lab val cyesis cyesis
-
-tab cyesis pH_ranges, row
-
-*tabulate protein, pc ratio, and ac ratio
-tab proteinuria
-tab albuminuria
-tab pcrationeg
-tab acrationeg
-sum rtec
-
-*generate pyuria to be if leukocytes is 3+
-generate pyuria = 0 if leukocytes < 2
-replace pyuria = 1 if leukocytes >= 2
-replace pyuria = 0 if leukocytes >= 4
-label define pyuria 0 "0 no" 1 "1 yes"
-label val pyuria pyuria
-
-*generate albuminuria yes for micro and macroalbuminuria
-generate albuminuriayn = 0 if albuminuria > 2
-replace albuminuriayn = 1 if  albuminuria <= 2
-label define albuminuriayn 0 "0 no" 1 "1 yes"
-lab val albuminuriayn albuminuriayn
-
-cs pyuria albuminuriayn
-logistic pyuria albuminuriayn
-
-tab pyuria
-drop pyuria
+*correlation of two categorical data
+tab ALBUMINURIA SG_label, chi2
+tab ALBUMINURIA ph_label, chi2
+tab ALBUMINURIA NITRITE, chi2
+tab ALBUMINURIA LEUKOCYTES, chi2
+tab ALBUMINURIA KETONES, chi2
+tab ALBUMINURIA GLUCOSE, chi2
+tab ALBUMINURIA COLOR, chi2
+tab ALBUMINURIA APPEARANCE, chi2
+tab ALBUMINURIA BLOOD, column
+tab CATEGORY ALBUMINURIA, chi2
+tab ALBUMINURIA BLOOD,chi2
+tab ALBUMINURIA BILIRUBIN, chi2
+tab ALBUMINURIA SEX, chi2
+tab ALBUMINURIA ageranges, chi2
 
 
-label drop cyesis
+*adding cell makes it draw the percentage table using the overall total
+tab CATEGORY ALBUMINURIA, chi2 cell
+
+*if the continuous data SG was being used,
+anova SG ALBUMINURIA
 
 
+*generating and defining urine acidity
+generate ph_acidity = 0 if PH <
+log
 
 
+***************************************
+*13/11/2023
+*redefining the population to unkown, cyesis, diabetes, and hypertension
+generate CATEGORYNEW = 1 if CATEGORY == 1
+replace CATEGORYNEW = 2 if CATEGORY == 2
+replace CATEGORYNEW = 3 if CATEGORY == 3
+replace CATEGORYNEW = 4 if CATEGORY == 4
+replace CATEGORYNEW = 5 if CATEGORY == 5
+replace CATEGORYNEW = 6 if CATEGORY == 6
+replace CATEGORYNEW = 7 if CATEGORY == 7
+replace CATEGORYNEW = 8 if CATEGORY == 8
+replace CATEGORYNEW = 10 if CATEGORY == 10
 
+label define CATEGORYNEW 1 "cyesis" 2 "cyesis" 3 "cyesis" 4 "cyesis" 5 "diabetes" 6 "diabetes" 7 "hypertension only" 8 "8 unknown" 10 "cyesis"
+label val CATEGORYNEW CATEGORYNEW
 
+*extracted new data definitiono from excel and labeled as var31
+label define var31 1 "cyesis" 2 "diabetes" 3 "hypertension" 4 "unknown"
+label val var31 var31
 
+tab var31
+tab var31 ALBUMINURIA, column
 
+*obtaining pictorial views for the significant chi squares
+graph bar (count), over(KETONES) by(ALBUMINURIA, total) 
 
+graph bar (count), over(KETONES) by(ALBUMINURIA, total) bar(1, color(blue) lcolor(black) lwidth(thick)) bar(2, color(red) lcolor(black) lwidth(thick)) bar(3, color(green) lcolor(black) lwidth(thick))
 
+graph bar, over (SG_label) over (ALBUMINURIA)
+graph bar, over (NITRITE) over (ALBUMINURIA)
+graph bar, over (LEUKOCYTES) over (ALBUMINURIA)
+graph bar, over (KETONES) over (ALBUMINURIA)
+graph bar, over (GLUCOSE) over (ALBUMINURIA)
+graph bar, over (APPEARANCE) over (ALBUMINURIA)
+graph bar, over (var31) over (ALBUMINURIA)
+graph bar, over (BLOOD) over (ALBUMINURIA)
 
+tab SG_label ALBUMINURIA, column
+tab NITRITE ALBUMINURIA, column
+tab LEUKOCYTES ALBUMINURIA, column
+tab KETONES ALBUMINURIA, column
+tab GLUCOSE ALBUMINURIA, column
+tab APPEARANCE ALBUMINURIA, column
+tab var31 ALBUMINURIA, column
+tab BLOOD ALBUMINURIA, column
 
-
-
-
-
-
-
-graph bar (count), over (ageranges) over (sex) ytitle("Participants (%)") title("Gender Age Distribution Among Participants")
-
-drop ageranges
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-replace proteinuria = 1 if protein == 1
-label define proteinuria 1 ">=" 2 "2 mild" 3 "3 normal"
-label val nitrite nitrite
-
-drop proteinuria
-
-
-
-
-
-
+pwcorr SG_label ph_label NITRITE LEUKOCYTES KETONES GLUCOSE COLOR APPEARANCE BLOOD BILIRUBIN PROTEIN SEX ageranges var31 ALBUMINURIA, star(0.05)
 
 
 
